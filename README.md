@@ -25,7 +25,7 @@ The code performs the following tasks:
 
 ## Code Structure
 - `main.py`: The main script that executes the machine learning pipeline.
-- `utils.py`: Contains utility functions for loading data, splitting data, scaling features, training the model, and evaluating the model's performance.
+- `model.py`: Contains utility functions for loading data, splitting data, scaling features, training the model, and evaluating the model's performance.
 
 ## Customization
 You can customize the code to suit your specific needs by modifying the following parts:

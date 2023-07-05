@@ -1,37 +1,78 @@
-# Importing packages
-
-import pandas as pd 
-from sklearn.preprocessing import Normalizer
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import  accuracy_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
 
+def load_data(file_path):
+    """
+    Load data from a CSV file.
+    
+    Args:
+        file_path (str): Path to the CSV file.
+    
+    Returns:
+        pandas.DataFrame: Loaded data.
+    """
+    return pd.read_csv(file_path)
 
-# Importing data
+def split_data(X, y, test_size=0.2, random_state=42):
+    """
+    Split the data into training and testing sets.
+    
+    Args:
+        X (pandas.DataFrame): Features.
+        y (pandas.Series): Target variable.
+        test_size (float): Proportion of the data to be used as the test set.
+        random_state (int): Random seed for reproducibility.
+    
+    Returns:
+        tuple: X_train, X_test, y_train, y_test
+    """
+    return train_test_split(X, y, test_size=test_size, random_state=random_state)
 
-data = pd.read_csv("data/train.csv")
-X = data.drop(['Cover_Type'], axis = 1)
-Y = data['Cover_Type']
+def scale_data(X_train, X_test):
+    """
+    Scale the features using StandardScaler.
+    
+    Args:
+        X_train (pandas.DataFrame): Training features.
+        X_test (pandas.DataFrame): Testing features.
+    
+    Returns:
+        tuple: Scaled X_train, X_test
+    """
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+    return X_train_scaled, X_test_scaled
 
-#  Splitting train and test data
+def train_model(X_train, y_train, n_estimators=100, random_state=42):
+    """
+    Train a Random Forest classifier.
+    
+    Args:
+        X_train (numpy.ndarray): Scaled training features.
+        y_train (pandas.Series): Training target variable.
+        n_estimators (int): Number of trees in the forest.
+        random_state (int): Random seed for reproducibility.
+    
+    Returns:
+        RandomForestClassifier: Trained model.
+    """
+    model = RandomForestClassifier(n_estimators=n_estimators, random_state=random_state)
+    model.fit(X_train, y_train)
+    return model
 
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
-
-# Normalizing
-
-X_train = X_train.drop(['Id'], axis = 1)
-X_test = X_test.drop(['Id'], axis = 1)
-
-norm = Normalizer()
-norm_x_train = norm.fit_transform(X_train)
-norm_x_test = norm.transform(X_test)
-
-tree = DecisionTreeClassifier()
-
-tree.fit(norm_x_train, Y_train)
-
-pred = tree.predict(norm_x_test)
-
-acc = accuracy_score(Y_test, pred)
-
-print(acc)
+def evaluate_model(model, X_test, y_test):
+    """
+    Evaluate the trained model on the test set.
+    
+    Args:
+        model (RandomForestClassifier): Trained model.
+        X_test (numpy.ndarray): Scaled testing features.
+        y_test (pandas.Series): Testing target variable.
+    """
+    pred = model.predict(X_test)
+    acc = accuracy_score(y_test, pred)
+    print("Accuracy:", acc)
